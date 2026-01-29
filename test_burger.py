@@ -20,17 +20,28 @@ class TestBurger:
         burger.set_buns(mock_bun) 
         assert burger.bun == mock_bun 
      
-    def test_add_ingredient(self): 
-        burger = Burger() 
-        mock_ingredient = Mock() 
-         
-        burger.add_ingredient(mock_ingredient) 
-        assert len(burger.ingredients) == 1 
-        assert burger.ingredients[0] == mock_ingredient 
-         
-        mock_ingredient2 = Mock() 
-        burger.add_ingredient(mock_ingredient2) 
-        assert len(burger.ingredients) == 2 
+    def test_add_first_ingredient(self):
+        """Проверяем добавление первого ингредиента в пустой бургер."""
+        burger = Burger()
+        mock_ingredient = Mock()
+        
+        burger.add_ingredient(mock_ingredient)
+        
+        assert len(burger.ingredients) == 1
+        assert burger.ingredients[0] == mock_ingredient
+
+    def test_add_multiple_ingredients(self):
+        """Проверяем добавление нескольких ингредиентов."""
+        burger = Burger()
+        mock_ingredient1 = Mock()
+        mock_ingredient2 = Mock()
+        
+        burger.add_ingredient(mock_ingredient1)
+        burger.add_ingredient(mock_ingredient2)
+        
+        assert len(burger.ingredients) == 2
+        assert burger.ingredients[0] == mock_ingredient1
+        assert burger.ingredients[1] == mock_ingredient2
      
     def test_remove_ingredient(self): 
         burger = Burger() 
@@ -161,49 +172,94 @@ class TestBurger:
          
         assert receipt == expected_receipt 
      
-    def test_complex_burger_operations(self): 
-        burger = Burger() 
-         
-        mock_bun = Mock() 
-        mock_bun.get_price.return_value = 100 
-        mock_bun.get_name.return_value = "black bun" 
-         
-        mock_ingredient1 = Mock() 
-        mock_ingredient1.get_price.return_value = 50 
-        mock_ingredient1.get_type.return_value = "SAUCE" 
-        mock_ingredient1.get_name.return_value = "hot sauce" 
-         
-        mock_ingredient2 = Mock() 
-        mock_ingredient2.get_price.return_value = 75 
-        mock_ingredient2.get_type.return_value = "FILLING" 
-        mock_ingredient2.get_name.return_value = "cutlet" 
-         
-        mock_ingredient3 = Mock() 
-        mock_ingredient3.get_price.return_value = 60 
-        mock_ingredient3.get_type.return_value = "SAUCE" 
-        mock_ingredient3.get_name.return_value = "sour cream" 
-         
-        burger.set_buns(mock_bun) 
-        burger.add_ingredient(mock_ingredient1) 
-        burger.add_ingredient(mock_ingredient2) 
-        burger.add_ingredient(mock_ingredient3) 
-         
-        assert burger.get_price() == 385  # 100*2 + 50 + 75 + 60 
-         
-        burger.move_ingredient(0, 2) 
-         
-        burger.remove_ingredient(1) 
-         
-        assert burger.get_price() == 310  # 100*2 + 75 + 60 - 50 (удалили первый) 
-         
-        receipt = burger.get_receipt() 
-        expected_receipt = ( 
-            "(==== black bun ====)\n" 
-            "= sauce sour cream =\n" 
-            "= filling cutlet =\n" 
-            "(==== black bun ====)\n" 
-            "\n" 
-            "Price: 310" 
-        ) 
-         
+    def test_get_price_after_adding_multiple_ingredients(self):
+        """Проверяем расчёт цены после добавления нескольких ингредиентов."""
+        burger = Burger()
+        
+        mock_bun = Mock()
+        mock_bun.get_price.return_value = 100
+        burger.set_buns(mock_bun)
+        
+        mock_ingredient1 = Mock()
+        mock_ingredient1.get_price.return_value = 50
+        
+        mock_ingredient2 = Mock()
+        mock_ingredient2.get_price.return_value = 75
+        
+        mock_ingredient3 = Mock()
+        mock_ingredient3.get_price.return_value = 60
+        
+        burger.add_ingredient(mock_ingredient1)
+        burger.add_ingredient(mock_ingredient2)
+        burger.add_ingredient(mock_ingredient3)
+        
+        assert burger.get_price() == 385  # 100*2 + 50 + 75 + 60
+
+    def test_move_ingredient_changes_order(self):
+        """Проверяем, что перемещение ингредиента меняет порядок."""
+        burger = Burger()
+        
+        mock_ingredient1 = Mock()
+        mock_ingredient1.get_name.return_value = "hot sauce"
+        mock_ingredient1.get_type.return_value = "SAUCE"
+        
+        mock_ingredient2 = Mock()
+        mock_ingredient2.get_name.return_value = "cutlet"
+        mock_ingredient2.get_type.return_value = "FILLING"
+        
+        mock_ingredient3 = Mock()
+        mock_ingredient3.get_name.return_value = "sour cream"
+        mock_ingredient3.get_type.return_value = "SAUCE"
+        
+        burger.add_ingredient(mock_ingredient1)
+        burger.add_ingredient(mock_ingredient2)
+        burger.add_ingredient(mock_ingredient3)
+        
+        burger.move_ingredient(0, 2)
+        
+        # Проверяем новый порядок
+        assert burger.ingredients[0] == mock_ingredient2
+        assert burger.ingredients[1] == mock_ingredient3
+        assert burger.ingredients[2] == mock_ingredient1
+
+    def test_get_receipt_after_removing_ingredient(self):
+        """Проверяем формирование чека после удаления ингредиента."""
+        burger = Burger()
+        
+        mock_bun = Mock()
+        mock_bun.get_price.return_value = 100
+        mock_bun.get_name.return_value = "black bun"
+        burger.set_buns(mock_bun)
+        
+        mock_ingredient1 = Mock()
+        mock_ingredient1.get_price.return_value = 50
+        mock_ingredient1.get_type.return_value = "SAUCE"
+        mock_ingredient1.get_name.return_value = "hot sauce"
+        
+        mock_ingredient2 = Mock()
+        mock_ingredient2.get_price.return_value = 75
+        mock_ingredient2.get_type.return_value = "FILLING"
+        mock_ingredient2.get_name.return_value = "cutlet"
+        
+        mock_ingredient3 = Mock()
+        mock_ingredient3.get_price.return_value = 60
+        mock_ingredient3.get_type.return_value = "SAUCE"
+        mock_ingredient3.get_name.return_value = "sour cream"
+        
+        burger.add_ingredient(mock_ingredient1)
+        burger.add_ingredient(mock_ingredient2)
+        burger.add_ingredient(mock_ingredient3)
+        
+        burger.remove_ingredient(0)  # Удаляем первый ингредиент
+        
+        receipt = burger.get_receipt()
+        expected_receipt = (
+            "(==== black bun ====)\n"
+            "= filling cutlet =\n"
+            "= sauce sour cream =\n"
+            "(==== black bun ====)\n"
+            "\n"
+            "Price: 335"  # 100*2 + 75 + 60
+        )
+        
         assert receipt == expected_receipt
