@@ -21,7 +21,7 @@ class TestBurger:
         assert burger.bun == mock_bun 
      
     def test_add_first_ingredient(self):
-        """Проверяем добавление первого ингредиента в пустой бургер."""
+        """Проверяем добавление первого ингредиента в пустой бургер"""
         burger = Burger()
         mock_ingredient = Mock()
         
